@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Internal Server Error | VibeStream</title>
+{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1 class="display-4 text-danger">500</h1>
+        <p class="lead">Oops! Something went wrong on our end.</p>
+        <p class="lead">We're working on it, but in the meantime, you can go back to the home page.</p>
+        <a class="btn btn-primary" href="{{ url_for('home') }}">Go Back to Home</a>
+    </div>
+{% endblock %}
