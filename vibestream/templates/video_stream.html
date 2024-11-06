@@ -25,17 +25,23 @@
     </div>
 
     <div class="col-md-3">
-        <h4>More from {{ uploader }}</h4>
+        {% if current_user.is_authenticated and uploader == current_user.username %}
+            <h4>More from you</h4>
+        {% else %}
+            <h4>More from {{ uploader }}</h4>
+        {% endif %}
 
         {% for up_video in uploader_videos %}
-            <div class="card mb-4">
-                <img class="card-img-top" src="{{ url_for('static', filename = '/images/thumbs/' + up_video.id|string + '.png') }}" alt="{{ up_video.title }}" onerror="this.src='https://picsum.photos/800/450'">
-                <div class="card-body">
-                    <h5 class="card-title">{{ up_video.title }}</h5>
-                    <p class="card-text">Views: {{ up_video.watch_count }}</p>
-                    <a href="{{ url_for('stream_video', video_id = up_video.id) }}" class="btn btn-primary">Watch Video</a>
+            {% if not up_video.id == video.id %}
+                <div class="card mb-4">
+                    <img class="card-img-top" src="{{ url_for('static', filename = 'images/thumbs/' + up_video.id|string + '.png') }}" alt="{{ up_video.title }}" onerror="this.src='https://picsum.photos/800/450'">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ up_video.title }}</h5>
+                        <p class="card-text">Views: {{ up_video.watch_count }}</p>
+                        <a href="{{ url_for('stream_video', video_id = up_video.id) }}" class="btn btn-primary">Watch Video</a>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         {% endfor %}
     </div>
 </div>
