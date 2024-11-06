@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="text-center mb-4">My Profile</h2>
+
+<div class="mb-3 text-center">
+    <a href="{{ url_for('upload') }}" class="btn btn-success">Upload a New Video</a>
+</div>
+
+<div class="row">
+    {% for video in videos %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <img class="card-img-top" src="{{ url_for('static', filename = '/images/thumbs/' + video.id|string + '.png') }}" alt="{{ video.title }}" onerror="this.src='https://picsum.photos/800/450'">
+                <div class="card-body">
+                    <h5 class="card-title">{{ video.title }}</h5>
+                    <p class="card-text">Uploaded: {{ video.upload_date.strftime('%B %d, %Y') }}</p>
+                    <p class="card-text">Views: {{ video.watch_count }}</p>
+                    <a href="{{ url_for('stream_video', video_id=video.id) }}" class="btn btn-primary">Watch Video</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p>You have not uploaded any videos!</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
