@@ -56,9 +56,13 @@ def register():
             return redirect(url_for('register'))
         
         new_user = User(username = username, email = email, password = hashed_password)
+
+        try:
+            db.session.add(new_user)
+            db.session.commit()
         
-        db.session.add(new_user)
-        db.session.commit()
+        except:
+            return render_template('custom_500.html'), 500
 
         flash('Account created successfully!', 'success')
         login_user(new_user)
@@ -110,8 +114,13 @@ def upload():
         filename = secure_filename(video.filename)
         
         video_entry = Video(title = title, filename = filename, uploader = current_user)
-        db.session.add(video_entry)
-        db.session.commit()
+
+        try:
+            db.session.add(video_entry)
+            db.session.commit()
+        
+        except:
+            return render_template('custom_500.html'), 500
 
         video_save_path = os.path.join(app.root_path, UPLOADED_VIDEOS_DEST, f'{video_entry.id}_{filename}')
         video.save(video_save_path)
@@ -140,7 +149,12 @@ def stream_video(video_id):
         create_thumbnail(video_path, thumb_path)
     
     video.watch_count += 1
-    db.session.commit()
+
+    try:
+        db.session.commit()
+    
+    except:
+        return render_template('custom_500.html'), 500
     
     return render_template('video_stream.html', video = video, video_extension = video_extension, uploader = uploader.username, uploader_videos = uploader_videos)
 
@@ -197,7 +211,10 @@ def user_profile(username):
     user = User.query.filter_by(username = username).first()
 
     if user:
-        videos = user.videos
-        return render_template('user_profile.html', username = username, videos = videos)
+        if user == current_user:
+            return redirect(url_for('profile'))
+        else:
+            videos = user.videos
+            return render_template('user_profile.html', username = username, videos = videos)
     
     return render_template('custom_404.html'), 404

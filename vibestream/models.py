@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
 class Video(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(150), nullable = False)
-    filename = db.Column(db.String(100), unique = True, nullable = False)
+    filename = db.Column(db.String(100), nullable = False)
     upload_date = db.Column(db.DateTime, default = dt.utcnow)
     watch_count = db.Column(db.Integer, default = 0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
