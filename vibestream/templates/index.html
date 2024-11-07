@@ -1,8 +1,8 @@
-<!-- app/templates/home.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-{% with messages = get_flashed_messages(with_categories = True) %}
+
+{% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
         {% for category, message in messages %}
             <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
@@ -10,39 +10,51 @@
     {% endif %}
 {% endwith %}
 
-  <h2 class="text-center mb-4">VibeStream</h2>
-
-  {% if current_user.is_authenticated %}
-  <div class="row">
+<div class="row mb-4">
     <div class="col-md-6 mb-3">
-      <h2>Welcome, {{ current_user.username }}</h2>
+        {% if current_user.is_authenticated %}
+        <h3 class="text-dark">Hello, {{ current_user.username }}!</h3>
+        {% else %}
+        <h3 class="text-dark">Explore Our Videos!</h3>
+        {% endif %}
     </div>
 
-    <div class="col-md-6 mb-3">
-      <div class="mb-3 text-end">
-        <a href="{{ url_for('upload') }}" class="btn btn-success">Upload a New Video</a>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
-  <div class="row">
-    {% for video in videos %}
-      <div class="col-md-4 mb-3">
-        <div class="card">
-          <img class="card-img-top" src="{{ url_for('static', filename = 'images/thumbs/' + video.id|string + '.png') }}" alt="{{ video.title }}" onerror="this.src='https://picsum.photos/800/450'">
-          <div class="card-body">
-            <h5 class="card-title">{{ video.title }}</h5>
-            <p class="card-text">Uploaded: {{ video.upload_date.strftime('%B %d, %Y') }}</p>
-            <p class="card-text">{{ users[video.id] }}</p>
-            <p class="card-text">Views: {{ video.watch_count }}</p>
-            <a href="{{ url_for('stream_video', video_id = video.id) }}" class="btn btn-primary">Watch Video</a>
-          </div>
+    <!-- Dropdown to Sort Videos (visible to everyone) -->
+    <div class="col-md-6 mb-3 d-flex justify-content-end align-items-center">
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('upload') }}" class="btn btn-primary me-2">Upload a New Video</a>
+        {% endif %}
+        
+        <!-- Dropdown to select sorting (this is always visible) -->
+        <div class="form-group mb-0">
+            <select id="sortBy" class="form-control" onchange="sortVideos()">
+                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+                <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest</option>
+                <option value="popular" {% if sort_by == 'popular' %}selected{% endif %}>Popular</option>
+            </select>
         </div>
-      </div>
+    </div>
+</div>
+
+<div class="row" id="videoList">
+    {% for video in videos %}
+    <div class="col-md-4 mb-4 video-item" data-upload="{{ video.upload_date.isoformat() }}" data-views="{{ video.watch_count }}">
+        <div class="card shadow-lg border-0 rounded-3 overflow-hidden">
+            <img class="card-img-top" src="{{ url_for('static', filename='images/thumbs/' + video.id|string + '.png') }}" alt="{{ video.title }}" onerror="this.src='https://picsum.photos/800/450'">
+            <div class="card-body">
+                <h5 class="card-title text-dark">{{ video.title }}</h5>
+                <p class="card-text text-muted">Uploaded: {{ video.upload_date.strftime('%B %d, %Y') }}</p>
+                <p class="card-text text-muted">Uploaded by: {{ users[video.id] }}</p>
+                <p class="card-text text-muted">Views: <strong>{{ video.watch_count }}</strong></p>
+                <a href="{{ url_for('stream_video', video_id=video.id) }}" class="btn btn-primary w-100">Watch Video</a>
+            </div>
+        </div>
+    </div>
     {% else %}
-      <p>No videos available yet. Be the first to upload!</p>
+    <p>No videos available yet. Be the first to upload!</p>
     {% endfor %}
-  </div>
+</div>
+
+<script src="{{ url_for('static', filename = 'js/sortVideos.js') }}"></script>
 
 {% endblock %}

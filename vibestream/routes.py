@@ -218,3 +218,18 @@ def user_profile(username):
             return render_template('user_profile.html', username = username, videos = videos)
     
     return render_template('custom_404.html'), 404
+
+@app.route('/like/<int:video_id>')
+@login_required
+def like_video(video_id):
+    return 'Video Liked'
+
+@app.route('/comment/<int:video_id>')
+@login_required
+def comment_video(video_id):
+    return 'Commented'
+
+@app.route('/reply/<int:comment_id>')
+@login_required
+def reply_comment(comment_id):
+    return 'Replied'

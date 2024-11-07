@@ -1,35 +1,67 @@
 {% extends 'base.html' %}
 
 {% block head %}
-
 {{ super() }}
 <link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet" />
+<style>
+    .video-container {
+        position: relative;
+        width: 100%;
+        height: 50vh;
+        align-content: center;
+    }
 
+    #my-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-
 <div class="row">
     <div class="col-md-9">
-        <video id="my-video" class="video-js mb-4" controls preload="auto" width="800" height="400" data-setup="{}">
-            <source src="{{ url_for('watch_video', video_id = video.id) }}" type="video/{{ video_extension }}" />
-            <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-            </p>
-        </video>
+        <div class="video-container mb-4">
+            <video id="my-video" class="video-js mb-4" controls preload="auto" data-setup="{}">
+                <source src="{{ url_for('watch_video', video_id=video.id) }}" type="video/{{ video_extension }}" />
+                <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a web browser that
+                    <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                </p>
+            </video>
+        </div>
 
-        <h3>{{ video.title }}</h3>
+        <div class="row">
+            <div class="col-9">
+                <h3>{{ video.title }}</h3>
+            </div>
+
+            <div class="col-3 text-end">
+                <button id="like-btn" class="btn btn-success" data-video-id="{{ video.id }}" data-like-type="like">
+                    Like
+                </button>
+
+                <button id="like-btn" class="btn btn-warning" data-video-id="{{ video.id }}" data-like-type="like">
+                    Follow
+                </button>
+            </div>
+        </div>
+
+        
         <h4><a href="{{ url_for('user_profile', username = uploader) }}">{{ uploader }}</a></h4>
         <h5>Views: {{ video.watch_count }}</h5>
     </div>
 
     <div class="col-md-3">
-        {% if current_user.is_authenticated and uploader == current_user.username %}
+        <div class="text-center">
+            {% if current_user.is_authenticated and uploader == current_user.username %}
             <h4>More from you</h4>
         {% else %}
             <h4>More from {{ uploader }}</h4>
         {% endif %}
+        </div>
+
 
         {% for up_video in uploader_videos %}
             {% if not up_video.id == video.id %}
@@ -46,7 +78,5 @@
     </div>
 </div>
 
-
 <script src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
-
 {% endblock %}
